@@ -1,237 +1,47 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>測定データ一覧</title>
-  <style>
-    :root {
-      --bg-color: #f4f6f8;
-      --text-color: #000;
-      --header-bg: #007BFF;
-      --table-bg: white;
-      --badge-ok: #28a745;
-      --badge-ng: #dc3545;
-      --btn-bg: #007BFF;
-      --btn-hover: #0056b3;
-    }
-
-    body.dark {
-      --bg-color: #1e1e1e;
-      --text-color: #fff;
-      --header-bg: #333;
-      --table-bg: #2c2c2c;
-    }
-
-    body {
-      font-family: 'Noto Sans', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: var(--bg-color);
-      color: var(--text-color);
-    }
-
-    header {
-      background: var(--header-bg);
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-
-    main {
-      padding: 20px;
-      overflow-x: auto;
-    }
-
-    .controls {
-      margin-bottom: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--table-bg);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      min-width: 600px;
-    }
-
-    th, td {
-      padding: 14px;
-      border-bottom: 1px solid #ddd;
-      text-align: center;
-    }
-
-    th {
-      background-color: #f1f3f5;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .badge {
-      padding: 6px 12px;
-      border-radius: 999px;
-      color: white;
-      font-weight: bold;
-      font-size: 14px;
-      display: inline-block;
-    }
-
-    .badge.ok {
-      background-color: var(--badge-ok);
-    }
-
-    .badge.ng {
-      background-color: var(--badge-ng);
-    }
-
-    .detail-btn, .control-btn {
-      background-color: var(--btn-bg);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .detail-btn:hover, .control-btn:hover {
-      background-color: var(--btn-hover);
-    }
-
-    footer {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 14px;
-      color: #888;
-      padding-bottom: 10px;
-    }
-
-    @media screen and (max-width: 600px) {
-      th, td {
-        padding: 10px;
-        font-size: 12px;
-      }
-      .detail-btn {
-        font-size: 12px;
-        padding: 6px 10px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"/>
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
   <header>
     <h1>測定データ一覧</h1>
-    <button class="control-btn" onclick="toggleDarkMode()">🌙 ダークモード切替</button>
+    <button onclick="toggleDarkMode()">🌙 ダークモード</button>
+    <button onclick="downloadCSV()">📥 CSVダウンロード</button>
+    <span id="ngCount">異常判定：0件</span>
   </header>
 
   <main>
-    <div class="controls">
-      <input type="text" id="searchInput" placeholder="機体名で検索..." onkeyup="filterTable()" />
-      <select id="filterResult" onchange="filterTable()">
-        <option value="">すべて</option>
-        <option value="OK">OK</option>
-        <option value="NG">NG</option>
-      </select>
-      <button class="control-btn" onclick="downloadCSV()">CSVダウンロード</button>
-      <div id="ngCount">異常判定：<strong>0件</strong></div>
-    </div>
-
-    <table id="dataTable">
+    <table id="dataTable" class="display">
       <thead>
         <tr>
           <th>機体名</th>
-          <th onclick="sortTableByDate()">測定日時 ⬍</th>
+          <th>測定日時</th>
           <th>判定結果</th>
           <th>詳細</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>測定機A</td>
-          <td>2025/04/16 14:00</td>
-          <td><span class="badge ok">OK</span></td>
-          <td><button class="detail-btn">詳細</button></td>
-        </tr>
-        <tr>
-          <td>測定機B</td>
-          <td>2025/04/16 15:00</td>
-          <td><span class="badge ng">NG</span></td>
-          <td><button class="detail-btn">詳細</button></td>
-        </tr>
-        <tr>
-          <td>測定機C</td>
-          <td>2025/04/16 16:30</td>
-          <td><span class="badge ok">OK</span></td>
-          <td><button class="detail-btn">詳細</button></td>
-        </tr>
-      </tbody>
+      <tbody></tbody>
     </table>
   </main>
 
-  <footer>
-    <p>© 2025 グループ2 - 東陽テクニカ</p>
-  </footer>
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">×</span>
+      <h3>詳細情報</h3>
+      <p><strong>機体名:</strong> <span id="modalName"></span></p>
+      <p><strong>測定日時:</strong> <span id="modalTime"></span></p>
+      <p><strong>判定結果:</strong> <span id="modalResult" class="badge"></span></p>
+    </div>
+  </div>
 
-  <script>
-    function filterTable() {
-      const input = document.getElementById("searchInput").value.toLowerCase();
-      const filter = document.getElementById("filterResult").value;
-      const table = document.getElementById("dataTable");
-      const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-      let ngCount = 0;
-
-      for (let row of rows) {
-        const machine = row.cells[0].textContent.toLowerCase();
-        const result = row.cells[2].textContent.trim();
-        const matchMachine = machine.includes(input);
-        const matchResult = filter === "" || result === filter;
-        const show = matchMachine && matchResult;
-
-        row.style.display = show ? "" : "none";
-
-        if (show && result === "NG") ngCount++;
-      }
-
-      document.getElementById("ngCount").innerHTML = `異常判定：<strong>${ngCount}件</strong>`;
-    }
-
-    function sortTableByDate() {
-      const table = document.getElementById("dataTable").tBodies[0];
-      const rows = Array.from(table.rows);
-
-      rows.sort((a, b) => new Date(b.cells[1].textContent) - new Date(a.cells[1].textContent));
-      for (const row of rows) table.appendChild(row);
-    }
-
-    function downloadCSV() {
-      const table = document.getElementById("dataTable");
-      let csv = "";
-      const rows = table.querySelectorAll("tr");
-
-      rows.forEach(row => {
-        const cols = row.querySelectorAll("th, td");
-        const line = Array.from(cols).map(col => `"${col.textContent.trim()}"`).join(",");
-        csv += line + "\n";
-      });
-
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "data.csv";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark");
-    }
-
-    window.onload = filterTable;
-  </script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="assets/js/main.js"></script>
 </body>
 </html>

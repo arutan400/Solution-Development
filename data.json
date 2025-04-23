@@ -1,0 +1,6 @@
+
+[
+  { "name": "測定機A", "datetime": "2025/04/16 14:00", "result": "OK" },
+  { "name": "測定機B", "datetime": "2025/04/16 15:00", "result": "NG" },
+  { "name": "測定機C", "datetime": "2025/04/16 16:30", "result": "" }
+]
