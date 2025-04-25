@@ -1,6 +1,6 @@
-
 [
-  { "name": "測定機A", "datetime": "2025/04/16 14:00", "result": "OK" },
-  { "name": "測定機B", "datetime": "2025/04/16 15:00", "result": "NG" },
-  { "name": "測定機C", "datetime": "2025/04/16 16:30", "result": "" }
+  { "name": "測定機A", "datetime": "2025/04/23 14:00", "result": "OK" },
+  { "name": "測定機B", "datetime": "2025/04/23 14:30", "result": "NG" },
+  { "name": "測定機C", "datetime": "2025/04/23 15:00", "result": "" },
+  { "name": "測定機D", "datetime": "2025/04/23 15:30", "result": "OK" }
 ]
