@@ -1,0 +1,31 @@
+{
+  "extends": ["markuplint:recommended"],
+  "rules": {
+    "required-attr": true,
+    "require-accessible-name": true,
+    "wai-aria": true,
+    "heading-level": true
+  },
+  "nodeRules": [
+    {
+      "selector": "img",
+      "rules": {
+        "required-attr": {
+          "options": {
+            "attrs": ["alt"]
+          }
+        }
+      }
+    },
+    {
+      "selector": "button",
+      "rules": {
+        "required-attr": {
+          "options": {
+            "attrs": ["aria-label"]
+          }
+        }
+      }
+    }
+  ]
+}
