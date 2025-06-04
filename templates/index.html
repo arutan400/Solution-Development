@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>測定データ一覧</title>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/style.css') }}">
+</head>
+<body>
+  <header>
+    <h1 id="page-title">測定データ一覧</h1>
+    <button aria-label="ダークモードを切り替える" onclick="toggleDarkMode()">🌙</button>
+    <span id="ngCount">異常判定：0件</span>
+  </header>
+
+  <main aria-labelledby="page-title">
+    <h2>データ一覧テーブル</h2>
+    <table id="dataTable" class="display">
+      <thead>
+        <tr role="row">
+          <th>工場名</th>
+          <th>機種</th>
+          <th>測定日時</th>
+          <th>判定結果</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" defer></script>
+  <script src="{{ url_for('static', filename='assets/js/main.js') }}" defer></script>
+</body>
+</html>

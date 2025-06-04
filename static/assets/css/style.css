@@ -1,0 +1,28 @@
+body {
+  font-family: sans-serif;
+  background: #f4f6f8;
+  color: #000;
+  margin: 0;
+  padding: 0;
+}
+header {
+  background: #007BFF;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+main {
+  padding: 20px;
+}
+table.dataTable {
+  width: 100%;
+}
+.badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: white;
+  font-weight: bold;
+}
+.badge.ok { background-color: #28a745; }
+.badge.ng { background-color: #dc3545; }
+.badge.na { background-color: #6c757d; }
